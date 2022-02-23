@@ -1,8 +1,10 @@
-interface CustomMapProps {
+export interface CustomMapProps {
   location: {
     lat: number;
     lng: number;
-  }
+  };
+  markerContent(): string; // This is a method that returns a string
+  color?: string; // This is an optional property
 }
 
 export class CustomMap {
@@ -19,12 +21,20 @@ export class CustomMap {
   }
 
   addMarker (CustomMapProps: CustomMapProps): void {
-    new google.maps.Marker({
+    const marker = new google.maps.Marker({
       map: this.googleMap,
       position: {
         lat: CustomMapProps.location.lat,
         lng: CustomMapProps.location.lng
       }
     });
+
+    marker.addListener('click', () => {
+      const infoWindow = new google.maps.InfoWindow({
+        content: CustomMapProps.markerContent()
+      });
+
+      infoWindow.open(this.googleMap, marker);
+    })
   }
 }
